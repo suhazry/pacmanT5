@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Game RBT Pacman Tahun 5 - SK Taman Molek</title>
+
+    <!-- Import Font 'Fredoka' dari Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            background-color: #051311; /* Cyber Emerald Dark Background */
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        /* Header UI Menegak */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 4px;
+            text-align: center;
+            width: 100%;
+            background: linear-gradient(180deg, #0b2926 0%, #051311 100%);
+            border-bottom: 2px solid #00FFCC;
+            flex-shrink: 0;
+            height: 38px;
+        }
+
+        .header img {
+            height: 26px;
+            width: auto;
+        }
+
+        .header-text h2 {
+            font-size: 0.78rem;
+            color: #00FFCC;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 5px rgba(0, 255, 204, 0.4);
+        }
+
+        .header-text h3 {
+            font-size: 0.62rem;
+            color: #A0E6D2;
+            font-weight: 400;
+        }
+
+        /* Skrin Mula Menegak */
+        #login-screen {
+            background-color: #0d211e;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+            width: 90vw;
+            max-width: 380px;
+            text-align: center;
+            border: 2px solid #00A887;
+            margin: auto 0;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .logo-welcome {
+            width: 70px;
+            height: auto;
+            margin-bottom: 6px;
+        }
+
+        .input-group {
+            margin: 8px 0;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 3px;
+            font-size: 0.75rem;
+            color: #a0d8cc;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #1a4a42;
+            background-color: #122e2a;
+            color: #fff;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(135deg, #00FFCC, #00A887);
+            color: #021a15;
+            border: none;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 6px;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(0, 255, 204, 0.3);
+        }
+
+        button:hover {
+            transform: scale(1.02);
+        }
+
+        /* Kad Pemain Terbaik */
+        #top-player-box {
+            margin-top: 12px;
+            background: linear-gradient(135deg, #12332c 0%, #081a17 100%);
+            border: 1.5px solid #00FFCC;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+        }
+
+        #top-player-box h4 {
+            color: #00FFCC;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .top-player-info {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.85rem;
+            color: #FFD700;
+        }
+
+        .top-player-detail {
+            color: #FFFFFF;
+            font-size: 0.78rem;
+            margin-top: 2px;
+        }
+
+        /* Container Permainan */
+        #game-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100vw;
+            height: calc(100vh - 38px);
+            padding: 4px;
+            gap: 4px;
+        }
+
+        #top-ui {
+            width: 100%;
+            background: linear-gradient(145deg, #0a2622, #051412);
+            border: 2px solid #00E676;
+            border-radius: 10px;
+            padding: 6px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+            box-shadow: 0 0 12px rgba(0, 230, 118, 0.25);
+        }
+
+        #stats-bar {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.72rem;
+            font-weight: bold;
+            color: #00FFCC;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+
+        /* Kad Soalan */
+        #question-box-card {
+            background: linear-gradient(135deg, #10332d 0%, #081a17 100%);
+            border: 1.5px solid #00FFCC;
+            border-radius: 8px;
+            width: 100%;
+            padding: 8px 10px;
+            box-shadow: inset 0 0 10px rgba(0, 255, 204, 0.15), 0 4px 12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+        }
+
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 255, 204, 0.25);
+            padding-bottom: 3px;
+        }
+
+        .q-badge {
+            background: linear-gradient(90deg, #00FFCC, #00A887);
+            color: #021a15;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .q-tag {
+            color: #FFD700;
+            font-size: 0.65rem;
+            font-weight: bold;
+        }
+
+        .q-text {
+            font-family: 'Fredoka', 'Segoe UI', sans-serif;
+            color: #FFFFFF;
+            font-size: 0.92rem;
+            font-weight: 600;
+            line-height: 1.3;
+            text-align: center;
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+            letter-spacing: 0.3px;
+        }
+
+        #canvas-wrapper {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            background-color: #030a09;
+            border: 2px solid #00A887;
+            border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+            touch-action: none;
+            cursor: pointer;
+        }
+
+        #justification-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.88);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background-color: #0f2b26;
+            padding: 16px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 100%;
+            border: 2px solid #FF5555;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            color: #FF5555;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        .modal-content p {
+            margin-bottom: 8px;
+            line-height: 1.3;
+            font-size: 0.8rem;
+            color: #E0E0E0;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .powerup-active {
+            color: #00BFFF !important;
+            animation: blink 0.5s infinite alternate;
+        }
+
+        @keyframes blink {
+            from { opacity: 1; }
+            to { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header UI -->
+    <div class="header">
+        <img src="LOGO_SEKOLAH-no bg ori.png" alt="Logo SK Taman Molek" id="school-logo-header">
+        <div class="header-text">
+            <h2>PANITIA RBT SK TAMAN MOLEK</h2>
+            <h3>Time Trial Pacman RBT Tahun 5</h3>
+        </div>
+    </div>
+
+    <!-- Skrin Mula & Pendaftaran Murid -->
+    <div id="login-screen">
+        <img src="LOGO_SEKOLAH-no bg ori.png" alt="Logo SK Taman Molek" class="logo-welcome">
+        <h3 style="margin-bottom: 6px; color: #00FFCC; font-size: 0.95rem;">Daftar Pemain Tahun 5</h3>
+        
+        <div class="input-group">
+            <label for="player-name">Nama Murid:</label>
+            <input type="text" id="player-name" placeholder="Contoh: Muhammad Ali">
+        </div>
+
+        <div class="input-group">
+            <label for="player-class">Kelas:</label>
+            <select id="player-class">
+                <option value="">-- Pilih Kelas --</option>
+                <option value="Arif 1">Arif 1</option>
+                <option value="Arif 2">Arif 2</option>
+                <option value="Arif 3">Arif 3</option>
+                <option value="Bijak 1">Bijak 1</option>
+                <option value="Bijak 2">Bijak 2</option>
+                <option value="Bijak 3">Bijak 3</option>
+                <option value="Cerdik 1">Cerdik 1</option>
+                <option value="Cerdik 2">Cerdik 2</option>
+                <option value="Cerdik 3">Cerdik 3</option>
+            </select>
+        </div>
+
+        <button onclick="startGame()">MULA PERMAINAN</button>
+
+        <!-- Paparan Pemain Terbaik -->
+        <div id="top-player-box">
+            <h4>🏆 Pemain Terbaik (Masa Terpantas)</h4>
+            <div id="top-player-content">
+                <div class="top-player-detail">Memuatkan data dari Google Sheet...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skrin Permainan -->
+    <div id="game-container">
+        <div id="top-ui">
+            <div id="stats-bar">
+                <span>Pemain: <span id="disp-name" style="color:#fff;">-</span> (<span id="disp-class" style="color:#fff;">-</span>)</span>
+                <span>Masa: <span id="timer-display" style="color:#FFD700;">0.0s</span></span>
+                <span>Nyawa: <span id="lives-display" style="color:#FF5555;">❤️❤️❤️</span></span>
+                <span>Soalan: <span id="progress-display" style="color:#00FFCC;">0/5</span></span>
+            </div>
+
+            <div id="question-box-card">
+                <div class="q-header">
+                    <span class="q-badge" id="q-badge-num">SOALAN 1</span>
+                    <span class="q-tag">Makan Bola [✓/✗]</span>
+                </div>
+                <div class="q-text" id="question-text">Memuatkan soalan...</div>
+            </div>
+
+            <div id="powerup-status" style="font-size: 0.7rem; height: 12px;"></div>
+        </div>
+        
+        <div id="canvas-wrapper">
+            <canvas id="gameCanvas"></canvas>
+        </div>
+    </div>
+
+    <!-- Modal Justifikasi -->
+    <div id="justification-modal">
+        <div class="modal-content">
+            <h3>JAWAPAN KURANG TEPAT!</h3>
+            <p id="modal-explanation"></p>
+            <p style="font-size: 0.75rem; color: #00FFCC; font-weight: bold;">⚠️ 1 Soalan Tambahan Telah Ditambah!</p>
+            <button onclick="resumeGame()">Faham & Teruskan</button>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "PASANG_WEB_APP_URL_SEBENAR_ANDA_DI_SINI";
+
+        // Bank Soalan RBT Tahun 5 (Soalan 1 - 45)[cite: 1]
+        const questionBank = [
+            { id: 1, text: "Sarung kusyen ialah artikel jahitan yang digunakan di dapur.", answer: false, reason: "Sarung kusyen digunakan di ruang tamu. Artikel jahitan yang digunakan di dapur ialah pemegang periuk." },
+            { id: 2, text: "Bekas pensel berzip ialah artikel jahitan yang berfungsi untuk membawa alat tulis.", answer: true, reason: "Bekas pensel berzip ialah artikel jahitan untuk membawa dan menyimpan alat tulis." },
+            { id: 3, text: "Tenaga boleh baharu ialah tenaga yang dijanakan daripada sumber semula jadi.", answer: true, reason: "Tenaga boleh baharu dijanakan daripada sumber semula jadi yang tidak habis digunakan." },
+            { id: 4, text: "Jahitan sembat ialah jahitan pada tepi lipatan fabrik.", answer: true, reason: "Jahitan sembat digunakan untuk menetapkan lipatan atau kelemim pada fabrik." },
+            { id: 5, text: "Ombak, biojisim dan geoterma ialah sumber tenaga boleh baharu.", answer: true, reason: "Ketiga-tiganya ialah sumber tenaga boleh baharu. Petroleum ialah tenaga tidak boleh baharu." },
+            { id: 6, text: "Pertanian bandar ialah aktiviti bercucuk tanam secara besar-besaran di bandar besar.", answer: false, reason: "Pertanian bandar ialah penanaman tanaman makanan di sekitar rumah yang mempunyai ruang terhad." },
+            { id: 7, text: "Wap panas dari perut bumi ialah sumber semula jadi bagi menjanakan tenaga geoterma.", answer: true, reason: "Tenaga geoterma dijanakan daripada haba atau wap panas dari perut bumi." },
+            { id: 8, text: "Peretas jahitan digunakan untuk mengukur dan menandakan pola.", answer: false, reason: "Peretas jahitan digunakan untuk memotong lubang butang serta meretas dan menanggalkan mata jahitan." },
+            { id: 9, text: "Biojisim ialah tenaga yang dihasilkan daripada reputan benda hidup seperti tumbuhan dan najis haiwan.", answer: true, reason: "Reputan tumbuhan dan najis haiwan menghasilkan biogas, iaitu tenaga biojisim." },
+            { id: 10, text: "Kulit buah-buahan boleh dijadikan baja kompos.", answer: true, reason: "Kulit buah-buahan ialah sisa organik yang mereput dan boleh dijadikan baja kompos." },
+            { id: 11, text: "Jahitan jelujur kasar digunakan sebagai jahitan hiasan untuk menjahit motif.", answer: false, reason: "Jelujur kasar ialah jahitan sementara. Jahitan hiasan untuk motif ialah silang pangkah." },
+            { id: 12, text: "Menjadikan sisa dapur sebagai baja kompos dan menghasilkan makanan sendiri ialah kebaikan pertanian bandar.", answer: true, reason: "Kedua-duanya ialah kebaikan pertanian bandar untuk penjimatan dan kelestarian." },
+            { id: 13, text: "Membancuh air kopi panas mewakili struktur kawalan pilihan.", answer: false, reason: "Membancuh air kopi mengikut langkah berturutan ialah struktur kawalan jujukan." },
+            { id: 14, text: "Kita perlu membuat beberapa lakaran idea reka bentuk sebelum menghasilkan produk.", answer: true, reason: "Beberapa lakaran idea dibuat supaya dapat dibandingkan untuk memilih yang terbaik." },
+            { id: 15, text: "Meningkatkan kesan rumah hijau ialah kepentingan tenaga boleh baharu.", answer: false, reason: "Tenaga boleh baharu mengurangkan pencemaran dan kesan rumah hijau, bukan meningkatkannya." },
+            { id: 16, text: "Hidroponik dan bekas pengairan kendiri ialah kaedah penanaman yang sesuai untuk pertanian bandar.", answer: true, reason: "Kedua-duanya sesuai untuk kawasan beruang terhad di bandar." },
+            { id: 17, text: "Simbol terminal (bujur) dalam carta alir menunjukkan mula atau tamat sesuatu aktiviti.", answer: true, reason: "Simbol bujur digunakan untuk menandakan MULA atau TAMAT." },
+            { id: 18, text: "Pertanian besar-besaran tidak sesuai dilakukan di bandar kerana ruang yang terhad.", answer: true, reason: "Ruang di bandar terhad, jadi pertanian bandar dilakukan secara kecil-kecilan." },
+            { id: 19, text: "Struktur kawalan pilihan ialah satu set tindakan yang sentiasa berulang sehingga syarat dipenuhi.", answer: false, reason: "Penerangan itu ialah struktur kawalan ulangan. Struktur kawalan pilihan membuat keputusan mengikut syarat." },
+            { id: 20, text: "Pemutar skru berfungsi mengetatkan dan melonggarkan skru pada produk.", answer: true, reason: "Pemutar skru digunakan untuk mengetatkan atau melonggarkan skru." },
+            { id: 21, text: "Mesin jahit digunakan untuk memotong kertas pola.", answer: false, reason: "Mesin jahit digunakan untuk mencantumkan fabrik. Memotong kertas menggunakan gunting kertas." },
+            { id: 22, text: "Simbol ombak mewakili sumber tenaga boleh baharu.", answer: true, reason: "Gerakan ombak laut dijanakan untuk menghasilkan tenaga elektrik." },
+            { id: 23, text: "Jahitan jelujur halus digunakan untuk memulakan dan mematikan jahitan.", answer: false, reason: "Jahitan untuk memulakan dan mematikan jahitan ialah jahitan kia." },
+            { id: 24, text: "Artikel yang siap dijahit dihias supaya kelihatan kemas dan menarik.", answer: true, reason: "Hiasan meningkatkan nilai estetika artikel jahitan." },
+            { id: 25, text: "Akuarium ialah bahan guna semula yang sesuai untuk dijadikan takung tanaman.", answer: false, reason: "Akuarium bukan bahan guna semula harian. Botol minyak dan bekas plastik lebih sesuai digunakan semula." },
+            { id: 26, text: "Lampu solar menyala pada waktu malam kerana penyerapan cahaya matahari telah dilakukan pada waktu siang.", answer: true, reason: "Panel solar menyerap tenaga matahari dan menyimpannya dalam bateri untuk kegunaan malam." },
+            { id: 27, text: "Hidroponik ialah salah satu jenis penanaman secara takungan.", answer: true, reason: "Hidroponik dan bekas pengairan kendiri menggunakan takungan air." },
+            { id: 28, text: "Tali mop digunakan untuk mengikat anak benih pada pancang.", answer: false, reason: "Tali mop berfungsi menyerap air dan nutrien dari takungan secara kapilari kepada tanaman." },
+            { id: 29, text: "Simbol berbentuk berlian dalam carta alir berfungsi menguji syarat.", answer: true, reason: "Simbol keputusan (berlian) menguji syarat Ya atau Tidak." },
+            { id: 30, text: "Penggunaan tenaga boleh baharu dapat memberi peluang pekerjaan seperti jurutera solar.", answer: true, reason: "Sektor tenaga boleh baharu mewujudkan pelbagai industri dan peluang kerjaya baharu." },
+            { id: 31, text: "Air, angin dan tanah ialah kumpulan tenaga boleh baharu yang betul.", answer: false, reason: "Kumpulan yang betul ialah air, angin dan ombak. Tanah bukan sumber tenaga boleh baharu." },
+            { id: 32, text: "Tenaga solar ialah contoh tenaga tidak boleh baharu.", answer: false, reason: "Tenaga solar ialah tenaga boleh baharu. Tenaga tidak boleh baharu ialah petroleum dan arang batu." },
+            { id: 33, text: "Roda surih digunakan bersama kertas karbon jahit untuk memindahkan tanda pola ke fabrik.", answer: true, reason: "Roda surih digolekkan di atas kertas karbon untuk memindahkan garisan pola." },
+            { id: 34, text: "Kincir angin sesuai dibina di kawasan yang mempunyai tiupan angin yang kuat.", answer: true, reason: "Tiupan angin yang kuat memusingkan bilah kincir untuk menjana tenaga elektrik." },
+            { id: 35, text: "Perkataan MULA ditulis di akhir penulisan pseudokod.", answer: false, reason: "Perkataan MULA ditulis di awal, manakala TAMAT di akhir pseudokod." },
+            { id: 36, text: "Aktiviti bercucuk tanam di kawasan rumah menjadikan rumah lebih cantik dan segar.", answer: true, reason: "Tumbuhan menghijaukan persekitaran dan mengindahkan kawasan rumah." },
+            { id: 37, text: "Sel basah ialah bahan yang menggunakan sumber tenaga semula jadi.", answer: false, reason: "Sel basah ialah sel kimia. Sel solar yang menggunakan tenaga semula jadi matahari." },
+            { id: 38, text: "Simbol titisan air mewakili sumber tenaga hidroelektrik (air).", answer: true, reason: "Titisan air mewakili tenaga air yang digunakan dalam stesen hidroelektrik." },
+            { id: 39, text: "Pita ukur digunakan untuk mengukur fabrik dan tubuh badan.", answer: true, reason: "Pita ukur ialah alatan mengukur yang fleksibel." },
+            { id: 40, text: "Rumah kampung ialah kediaman yang mempunyai kawasan sangat terhad.", answer: false, reason: "Rumah kampung selalunya mempunyai halaman luas. Rumah pangsa/flat yang beruang terhad." },
+            { id: 41, text: "Tujuan utama menjahit artikel ialah untuk membaiki dan menghasilkan barangan berguna.", answer: true, reason: "Kemahiran menjahit membolehkan kita membaiki pakaian rosak atau menghasilkan artikel harian." },
+            { id: 42, text: "Gunting kertas boleh digunakan untuk memotong fabrik.", answer: false, reason: "Gunting kertas akan menumpulkan bilah jika guna memotong kain. Gunting fabrik khas digunakan untuk kain." },
+            { id: 43, text: "Struktur kawalan ulangan membolehkan lampu kecemasan bernyala secara berulang.", answer: true, reason: "Lampu kerdip berulang kali menggunakan struktur kawalan ulangan." },
+            { id: 44, text: "Akuaponik ialah gabungan ternakan ikan dan penanaman tanaman tanpa tanah.", answer: true, reason: "Akuaponik menggabungkan akuakultur (ikan) dan hidroponik (tanaman)." },
+            { id: 45, text: "Pembungkus plastik makanan boleh dijadikan baja kompos.", answer: false, reason: "Plastik bukan sisa organik dan tidak mereput. Hanya sisa dapur organik boleh jadi baja kompos." }
+        ];
+
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'eat') {
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } else if (type === 'hit') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(30, now + 0.5);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+                osc.start(now); osc.stop(now + 0.5);
+            } else if (type === 'powerup') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.3);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            }
+        }
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Peta Labirin Menegak (11 x 17)
+        const grid = [
+            [1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,1,0,0,0,0,1],
+            [1,0,1,1,0,1,0,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,0,1,1,1,0,1,0,1],
+            [1,0,0,0,0,1,0,0,0,0,1],
+            [1,1,1,0,1,1,1,0,1,1,1],
+            [1,0,0,0,1,0,1,0,0,0,1],
+            [1,0,1,0,0,0,0,0,1,0,1],
+            [1,0,0,0,1,0,1,0,0,0,1],
+            [1,1,1,0,1,1,1,0,1,1,1],
+            [1,0,0,0,0,1,0,0,0,0,1],
+            [1,0,1,0,1,1,1,0,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,0,1,1,0,1],
+            [1,0,0,0,0,1,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1]
+        ];
+
+        const safeZones = [
+            { x: 1, y: 1, w: 2, h: 2 },
+            { x: 4, y: 7, w: 3, h: 3 },
+            { x: 8, y: 14, w: 2, h: 2 }
+        ];
+
+        let tileSize = 40;
+        let playerName = "";
+        let playerClass = "";
+        let lives = 3;
+        let timer = 0;
+        let timerInterval = null;
+        let gameLoopId = null;
+        let isPaused = false;
+
+        let activeQuestions = [];
+        let currentQuestion = null;
+        let completedCount = 0;
+        let targetTotal = 5;
+
+        let balls = [];
+        
+        let pacman = {
+            x: 0,
+            y: 0,
+            targetX: null,
+            targetY: null,
+            radius: 13,
+            speed: 3,
+            vx: 0,
+            vy: 0,
+            angle: 0,
+            mouthAngle: 0.2,
+            mouthSpeed: 0.02,
+            invincibleTimer: 0,
+            isHit: false,
+            hitTimer: 0
+        };
+
+        function resizeCanvasToFit() {
+            const wrapper = document.getElementById('canvas-wrapper');
+            if (!wrapper) return;
+
+            const scale = Math.min(wrapper.clientWidth / 440, wrapper.clientHeight / 680);
+            canvas.width = 440;
+            canvas.height = 680;
+
+            canvas.style.width = `${canvas.width * scale}px`;
+            canvas.style.height = `${canvas.height * scale}px`;
+        }
+
+        window.addEventListener('resize', resizeCanvasToFit);
+
+        window.addEventListener('keydown', e => {
+            if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(e.key)) {
+                e.preventDefault();
+            }
+            if (isPaused || pacman.isHit) return;
+
+            pacman.targetX = null; 
+            pacman.targetY = null;
+
+            if (e.key === 'ArrowUp' || e.key === 'w') { pacman.vx = 0; pacman.vy = -pacman.speed; }
+            if (e.key === 'ArrowDown' || e.key === 's') { pacman.vx = 0; pacman.vy = pacman.speed; }
+            if (e.key === 'ArrowLeft' || e.key === 'a') { pacman.vx = -pacman.speed; pacman.vy = 0; }
+            if (e.key === 'ArrowRight' || e.key === 'd') { pacman.vx = pacman.speed; pacman.vy = 0; }
+        });
+
+        function handlePointerInput(e) {
+            e.preventDefault();
+            if (isPaused || pacman.isHit) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            pacman.targetX = (clientX - rect.left) * scaleX;
+            pacman.targetY = (clientY - rect.top) * scaleY;
+        }
+
+        canvas.addEventListener('touchstart', handlePointerInput, { passive: false });
+        canvas.addEventListener('touchmove', handlePointerInput, { passive: false });
+        canvas.addEventListener('mousedown', handlePointerInput);
+
+        function startGame() {
+            playerName = document.getElementById('player-name').value.trim();
+            playerClass = document.getElementById('player-class').value;
+
+            if (!playerName || !playerClass) {
+                alert("Sila isi Nama dan pilih Kelas terlebih dahulu!");
+                return;
+            }
+
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('game-container').style.display = 'flex';
+
+            document.getElementById('disp-name').innerText = playerName;
+            document.getElementById('disp-class').innerText = playerClass;
+
+            resizeCanvasToFit();
+
+            let shuffled = shuffleArray(questionBank);
+            activeQuestions = shuffled.slice(0, 5);
+            targetTotal = 5;
+            completedCount = 0;
+            lives = 3;
+            timer = 0;
+            isPaused = false;
+
+            respawnPacmanCenterSafeZone();
+            resetAndRefreshBalls();
+            nextQuestion();
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (!isPaused && !pacman.isHit) {
+                    timer += 0.1;
+                    document.getElementById('timer-display').innerText = timer.toFixed(1) + "s";
+                }
+            }, 100);
+
+            cancelAnimationFrame(gameLoopId);
+            gameLoop();
+        }
+
+        function respawnPacmanCenterSafeZone() {
+            let centerZone = safeZones[1];
+            pacman.x = (centerZone.x + centerZone.w / 2) * tileSize;
+            pacman.y = (centerZone.y + centerZone.h / 2) * tileSize;
+            pacman.vx = 0; pacman.vy = 0;
+            pacman.targetX = null; pacman.targetY = null;
+            pacman.isHit = false; pacman.hitTimer = 0;
+        }
+
+        function isInSafeZone(x, y) {
+            return safeZones.some(z => {
+                return x >= z.x * tileSize && x <= (z.x + z.w) * tileSize &&
+                       y >= z.y * tileSize && y <= (z.y + z.h) * tileSize;
+            });
+        }
+
+        function isWall(x, y, radius = 0) {
+            let points = [
+                {x: x - radius, y: y - radius},
+                {x: x + radius, y: y - radius},
+                {x: x - radius, y: y + radius},
+                {x: x + radius, y: y + radius}
+            ];
+
+            return points.some(p => {
+                let gridX = Math.floor(p.x / tileSize);
+                let gridY = Math.floor(p.y / tileSize);
+                if (gridY < 0 || gridY >= grid.length || gridX < 0 || gridX >= grid[0].length) return true;
+                return grid[gridY][gridX] === 1;
+            });
+        }
+
+        function resetAndRefreshBalls() {
+            balls = [];
+            createBall('green'); createBall('green');
+            createBall('red'); createBall('red');
+            createBall('blue');
+        }
+
+        function createBall(type) {
+            let valid = false;
+            let bx, by;
+
+            while (!valid) {
+                let gx = Math.floor(Math.random() * (grid[0].length - 2)) + 1;
+                let gy = Math.floor(Math.random() * (grid.length - 2)) + 1;
+
+                if (grid[gy][gx] === 0) {
+                    bx = gx * tileSize + 20;
+                    by = gy * tileSize + 20;
+                    if (!isInSafeZone(bx, by) && Math.hypot(bx - pacman.x, by - pacman.y) > 80) {
+                        valid = true;
+                    }
+                }
+            }
+
+            const speeds = [-0.5, 0.5];
+            balls.push({
+                x: bx, y: by,
+                vx: speeds[Math.floor(Math.random() * 2)],
+                vy: speeds[Math.floor(Math.random() * 2)],
+                radius: 10, type: type
+            });
+        }
+
+        function nextQuestion() {
+            if (activeQuestions.length === 0) {
+                endGame(true);
+                return;
+            }
+            currentQuestion = activeQuestions[0];
+            document.getElementById('q-badge-num').innerText = `SOALAN ${completedCount + 1}/${targetTotal}`;
+            document.getElementById('question-text').innerText = currentQuestion.text;
+            updateProgressDisplay();
+        }
+
+        function updateProgressDisplay() {
+            document.getElementById('progress-display').innerText = `${completedCount}/${targetTotal}`;
+            let heartStr = "";
+            for (let i = 0; i < lives; i++) heartStr += "❤️";
+            document.getElementById('lives-display').innerText = heartStr;
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        function update() {
+            if (pacman.isHit) {
+                pacman.hitTimer--;
+                if (pacman.hitTimer <= 0) {
+                    pacman.isHit = false;
+                    isPaused = true;
+                    document.getElementById('modal-explanation').innerText = currentQuestion.reason;
+                    document.getElementById('justification-modal').style.display = 'flex';
+                }
+                return;
+            }
+
+            if (isPaused) return;
+
+            if (pacman.targetX !== null && pacman.targetY !== null) {
+                let dx = pacman.targetX - pacman.x;
+                let dy = pacman.targetY - pacman.y;
+                let dist = Math.hypot(dx, dy);
+
+                if (dist < pacman.speed) {
+                    pacman.x = pacman.targetX; pacman.y = pacman.targetY;
+                    pacman.vx = 0; pacman.vy = 0;
+                    pacman.targetX = null; pacman.targetY = null;
+                } else {
+                    pacman.vx = (dx / dist) * pacman.speed;
+                    pacman.vy = (dy / dist) * pacman.speed;
+                }
+            }
+
+            if (pacman.vx !== 0) {
+                let nextX = pacman.x + pacman.vx;
+                if (!isWall(nextX, pacman.y, pacman.radius)) pacman.x = nextX;
+                else { pacman.vx = 0; pacman.targetX = null; }
+            }
+
+            if (pacman.vy !== 0) {
+                let nextY = pacman.y + pacman.vy;
+                if (!isWall(pacman.x, nextY, pacman.radius)) pacman.y = nextY;
+                else { pacman.vy = 0; pacman.targetY = null; }
+            }
+
+            if (pacman.vx !== 0 || pacman.vy !== 0) {
+                pacman.angle = Math.atan2(pacman.vy, pacman.vx);
+            }
+
+            if (pacman.invincibleTimer > 0) {
+                pacman.invincibleTimer -= 1/60;
+                document.getElementById('powerup-status').innerText = `KEBAL (INVISIBLE): ${Math.ceil(pacman.invincibleTimer)}s`;
+                document.getElementById('powerup-status').className = 'powerup-active';
+            } else {
+                document.getElementById('powerup-status').innerText = '';
+                document.getElementById('powerup-status').className = '';
+            }
+
+            pacman.mouthAngle += pacman.mouthSpeed;
+            if (pacman.mouthAngle > 0.45 || pacman.mouthAngle < 0.05) pacman.mouthSpeed = -pacman.mouthSpeed;
+
+            balls.forEach(b => {
+                let nextBx = b.x + b.vx;
+                let nextBy = b.y + b.vy;
+
+                if (isWall(nextBx, b.y, b.radius) || isInSafeZone(nextBx, b.y)) b.vx = -b.vx;
+                else b.x += b.vx;
+
+                if (isWall(b.x, nextBy, b.radius) || isInSafeZone(b.x, nextBy)) b.vy = -b.vy;
+                else b.y += b.vy;
+
+                if (Math.hypot(b.x - pacman.x, b.y - pacman.y) < pacman.radius + b.radius) {
+                    handleCollision(b);
+                }
+            });
+        }
+
+        function handleCollision(ball) {
+            if (pacman.invincibleTimer > 0) {
+                if (ball.type === 'blue') {
+                    playSound('powerup');
+                    pacman.invincibleTimer = 4.0;
+                    balls = balls.filter(b => b !== ball);
+                }
+                return;
+            }
+
+            if (ball.type === 'blue') {
+                playSound('powerup');
+                pacman.invincibleTimer = 4.0;
+                balls = balls.filter(b => b !== ball);
+                return;
+            }
+
+            const isCorrect = ((ball.type === 'green') === currentQuestion.answer);
+
+            if (isCorrect) {
+                playSound('eat');
+                activeQuestions.shift();
+                completedCount++;
+                resetAndRefreshBalls();
+
+                if (activeQuestions.length > 0) nextQuestion();
+                else endGame(true);
+            } else {
+                playSound('hit');
+                pacman.isHit = true;
+                pacman.hitTimer = 30;
+
+                // TAMBAH 1 SOALAN RAWAK BAHARU DARI BAKI
+                let unchosen = questionBank.filter(q => !activeQuestions.includes(q));
+                let extraQ = unchosen.length > 0 
+                    ? unchosen[Math.floor(Math.random() * unchosen.length)] 
+                    : questionBank[Math.floor(Math.random() * questionBank.length)];
+                
+                activeQuestions.push(extraQ);
+                targetTotal++;
+                updateProgressDisplay();
+                resetAndRefreshBalls();
+            }
+        }
+
+        function resumeGame() {
+            document.getElementById('justification-modal').style.display = 'none';
+            respawnPacmanCenterSafeZone();
+            isPaused = false;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Labirin Dinding Cyber Emerald
+            for (let r = 0; r < grid.length; r++) {
+                for (let c = 0; c < grid[r].length; c++) {
+                    if (grid[r][c] === 1) {
+                        ctx.fillStyle = '#063d35';
+                        ctx.fillRect(c * tileSize, r * tileSize, tileSize, tileSize);
+                        ctx.strokeStyle = '#00A887';
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(c * tileSize + 2, r * tileSize + 2, tileSize - 4, tileSize - 4);
+                    }
+                }
+            }
+
+            // Rumah Selamat Neon Cyan
+            safeZones.forEach(z => {
+                ctx.fillStyle = 'rgba(0, 255, 204, 0.12)';
+                ctx.fillRect(z.x * tileSize, z.y * tileSize, z.w * tileSize, z.h * tileSize);
+                ctx.strokeStyle = '#00FFCC';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 4]);
+                ctx.strokeRect(z.x * tileSize, z.y * tileSize, z.w * tileSize, z.h * tileSize);
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#00FFCC';
+                ctx.font = 'bold 11px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText("RUMAH", (z.x + z.w / 2) * tileSize, (z.y + z.h / 2) * tileSize);
+            });
+
+            // Indicators
+            if (pacman.targetX !== null && pacman.targetY !== null && !pacman.isHit) {
+                ctx.beginPath();
+                ctx.arc(pacman.targetX, pacman.targetY, 4, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 255, 204, 0.6)';
+                ctx.fill();
+            }
+
+            // Bola-Bola
+            balls.forEach(b => {
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                if (b.type === 'green') {
+                    ctx.fillStyle = '#00E676'; ctx.shadowColor = '#00E676';
+                } else if (b.type === 'red') {
+                    ctx.fillStyle = '#FF2A6D'; ctx.shadowColor = '#FF2A6D';
+                } else if (b.type === 'blue') {
+                    ctx.fillStyle = '#00BFFF'; ctx.shadowColor = '#00BFFF';
+                }
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 9px Arial';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText(b.type === 'green' ? '✓' : (b.type === 'red' ? '✗' : '★'), b.x, b.y);
+            });
+
+            // Pacman
+            if (!pacman.isHit) {
+                ctx.beginPath();
+                let color = pacman.invincibleTimer > 0 ? '#00BFFF' : '#00FFCC';
+                ctx.fillStyle = color;
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 10;
+
+                let startAngle = pacman.angle + pacman.mouthAngle * Math.PI;
+                let endAngle = pacman.angle + (2 - pacman.mouthAngle) * Math.PI;
+
+                ctx.arc(pacman.x, pacman.y, pacman.radius, startAngle, endAngle);
+                ctx.lineTo(pacman.x, pacman.y);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            } else {
+                ctx.beginPath();
+                ctx.arc(pacman.x, pacman.y, pacman.radius + 8, 0, Math.PI * 2);
+                ctx.fillStyle = '#FF4500';
+                ctx.shadowColor = '#FF0000'; ctx.shadowBlur = 30;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(pacman.x, pacman.y, pacman.radius + 3, 0, Math.PI * 2);
+                ctx.fillStyle = '#00FFCC'; ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function endGame(isWin) {
+            clearInterval(timerInterval);
+            cancelAnimationFrame(gameLoopId);
+
+            if (isWin) {
+                alert(`TAHNIAH! Anda berjaya menamatkan permainan RBT Tahun 5 dalam masa ${timer.toFixed(1)} saat!`);
+                saveScoreToGoogleSheet(playerName, playerClass, timer.toFixed(1));
+            } else {
+                alert("GAME OVER!");
+            }
+
+            location.reload();
+        }
+
+        function saveScoreToGoogleSheet(nama, kelas, skor) {
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("PASANG_WEB_APP")) return;
+
+            const payload = JSON.stringify({ nama: nama, kelas: kelas, skor: skor });
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: payload
+            }).catch(err => console.error("Ralat simpan skor:", err));
+        }
+
+        // FUNGSI JSONP UNTUK BACA PEMAIN TERBAIK
+        function loadTopPlayer() {
+            const container = document.getElementById("top-player-content");
+
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("PASANG_WEB_APP")) {
+                container.innerHTML = "<div class='top-player-detail'>Sila pasang URL Apps Script.</div>";
+                return;
+            }
+
+            window.handleTopPlayerData = function(data) {
+                renderTopPlayer(data);
+                const scriptElem = document.getElementById("jsonp-script");
+                if (scriptElem) scriptElem.remove();
+            };
+
+            const oldScript = document.getElementById("jsonp-script");
+            if (oldScript) oldScript.remove();
+
+            const script = document.createElement("script");
+            script.id = "jsonp-script";
+            script.src = GOOGLE_SCRIPT_URL + "?callback=handleTopPlayerData&t=" + new Date().getTime();
+            script.onerror = function() {
+                container.innerHTML = "<div class='top-player-detail' style='color:#FF5555;'>Gagal memuatkan rekod.</div>";
+            };
+
+            document.body.appendChild(script);
+        }
+
+        function renderTopPlayer(player) {
+            const container = document.getElementById("top-player-content");
+            if (!player) {
+                container.innerHTML = "<div class='top-player-detail'>Tiada pemegang rekod lagi. Ajak murid jadi yang pertama!</div>";
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="top-player-info">👑 ${player.nama || player.NAMA}</div>
+                <div class="top-player-detail">Kelas: <b>${player.kelas || player.KELAS}</b> | Masa: <b style="color:#00FFCC;">${player.skor || player.SKOR}s</b></div>
+            `;
+        }
+
+        loadTopPlayer();
+    </script>
+</body>
+</html>
